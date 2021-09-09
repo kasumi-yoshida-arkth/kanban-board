@@ -42,4 +42,37 @@ class User extends Authenticatable
     {
         return $this->hasMany(Status::class)->orderBy('order');
     }
+
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            $user->statuses()->createdMany([
+                [
+                    'title' => '未処理',
+                    'slug' => 'backlog',
+                    'order' => 1
+                ],
+                [
+                    'title' => '着手',
+                    'slug' => 'up_next',
+                    'order' => 1
+                ],
+                [
+                    'title' => '進行中',
+                    'slug' => 'progress',
+                    'order' => 1
+                ],
+                [
+                    'title' => '完了',
+                    'slug' => 'done',
+                    'order' => 1
+                ],
+                [
+                    'title' => '保留',
+                    'slug' => 'on_hold',
+                    'order' => 1
+                ],
+            ]);
+        });
+    }
 }
