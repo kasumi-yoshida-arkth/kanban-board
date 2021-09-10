@@ -2054,9 +2054,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/KanbanBoard.vue?vue&type=script&lang=js&":
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/AddTaskForm.vue?vue&type=script&lang=js&":
 /*!******************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/KanbanBoard.vue?vue&type=script&lang=js& ***!
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/AddTaskForm.vue?vue&type=script&lang=js& ***!
   \******************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -2107,24 +2107,162 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  props: {
+    statusId: Number
+  },
+  data: function data() {
+    return {
+      newTask: {
+        title: "",
+        description: "",
+        status_id: null
+      },
+      errorMessage: ""
+    };
+  },
+  mounted: function mounted() {
+    this.newTask.status_id = this.statusId;
+  },
+  methods: {
+    handleAddNewTask: function handleAddNewTask() {
+      var _this = this;
+
+      if (!this.newTask.title) {
+        this.errorMessage = "The title field is required";
+        return;
+      }
+
+      axios.post("/tasks", this.newTask).then(function (res) {
+        _this.$emit("task-added", res.data);
+      })["catch"](function (err) {
+        _this.handleErrors(err);
+      });
+    },
+    handleErrors: function handleErrors(err) {
+      if (err.response && err.response.status === 422) {
+        var errorBag = err.response.data.errors;
+
+        if (errorBag.title) {
+          this.errorMessage = errorBag.title[0];
+        } else if (errorBag.description) {
+          this.errorMessage = errorBag.description[0];
+        } else {
+          this.errorMessage = err.response.message;
+        }
+      } else {
+        console.log(err.response);
+      }
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/KanbanBoard.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/KanbanBoard.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _AddTaskForm__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AddTaskForm */ "./resources/js/components/AddTaskForm.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  components: {
+    AddTaskForm: _AddTaskForm__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
   props: {
     initialData: Array
   },
   data: function data() {
     return {
-      statuses: []
+      statuses: [],
+      newTaskForStatus: 0
     };
   },
   mounted: function mounted() {
     this.statuses = JSON.parse(JSON.stringify(this.initialData));
+  },
+  methods: {
+    // statusIdを設定し、フォームを表示
+    openAddTaskForm: function openAddTaskForm(statusId) {
+      this.newTaskForStatus = statusId;
+    },
+    // statusIdをリセットしてフォームを閉じる
+    closeAddTaskForm: function closeAddTaskForm() {
+      this.newTaskForStatus = 0;
+    },
+    // ボードの正しい列にカードを追加
+    handleTaskAdded: function handleTaskAdded(newTask) {
+      // FInd the index of the status where we should add the newTask
+      var statusIndex = this.statuses.findIndex(function (status) {
+        return status.id === newTask.status_id;
+      }); // 新しく作成しカードをボードに追加する
+
+      this.statuses[statusIndex].tasks.push(newTask); // AddTaskFormを閉じる
+
+      this.closeAddTaskForm();
+    }
   }
 });
 
@@ -19610,6 +19748,45 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./resources/js/components/AddTaskForm.vue":
+/*!*************************************************!*\
+  !*** ./resources/js/components/AddTaskForm.vue ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _AddTaskForm_vue_vue_type_template_id_23302d8f___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AddTaskForm.vue?vue&type=template&id=23302d8f& */ "./resources/js/components/AddTaskForm.vue?vue&type=template&id=23302d8f&");
+/* harmony import */ var _AddTaskForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AddTaskForm.vue?vue&type=script&lang=js& */ "./resources/js/components/AddTaskForm.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _AddTaskForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _AddTaskForm_vue_vue_type_template_id_23302d8f___WEBPACK_IMPORTED_MODULE_0__.render,
+  _AddTaskForm_vue_vue_type_template_id_23302d8f___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/AddTaskForm.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/components/KanbanBoard.vue":
 /*!*************************************************!*\
   !*** ./resources/js/components/KanbanBoard.vue ***!
@@ -19649,6 +19826,22 @@ component.options.__file = "resources/js/components/KanbanBoard.vue"
 
 /***/ }),
 
+/***/ "./resources/js/components/AddTaskForm.vue?vue&type=script&lang=js&":
+/*!**************************************************************************!*\
+  !*** ./resources/js/components/AddTaskForm.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AddTaskForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AddTaskForm.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/AddTaskForm.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AddTaskForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
 /***/ "./resources/js/components/KanbanBoard.vue?vue&type=script&lang=js&":
 /*!**************************************************************************!*\
   !*** ./resources/js/components/KanbanBoard.vue?vue&type=script&lang=js& ***!
@@ -19665,6 +19858,23 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/AddTaskForm.vue?vue&type=template&id=23302d8f&":
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/AddTaskForm.vue?vue&type=template&id=23302d8f& ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddTaskForm_vue_vue_type_template_id_23302d8f___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddTaskForm_vue_vue_type_template_id_23302d8f___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddTaskForm_vue_vue_type_template_id_23302d8f___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AddTaskForm.vue?vue&type=template&id=23302d8f& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/AddTaskForm.vue?vue&type=template&id=23302d8f&");
+
+
+/***/ }),
+
 /***/ "./resources/js/components/KanbanBoard.vue?vue&type=template&id=12d93558&":
 /*!********************************************************************************!*\
   !*** ./resources/js/components/KanbanBoard.vue?vue&type=template&id=12d93558& ***!
@@ -19678,6 +19888,150 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_KanbanBoard_vue_vue_type_template_id_12d93558___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_KanbanBoard_vue_vue_type_template_id_12d93558___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./KanbanBoard.vue?vue&type=template&id=12d93558& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/KanbanBoard.vue?vue&type=template&id=12d93558&");
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/AddTaskForm.vue?vue&type=template&id=23302d8f&":
+/*!***********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/AddTaskForm.vue?vue&type=template&id=23302d8f& ***!
+  \***********************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "form",
+    {
+      staticClass:
+        "relative mb-3 flex flex-col justify-between bg-white rounded-md shadow overflow-hidden",
+      on: {
+        submit: function($event) {
+          $event.preventDefault()
+          return _vm.handleAddNewTask.apply(null, arguments)
+        }
+      }
+    },
+    [
+      _c("div", { staticClass: "p-3 flex-1" }, [
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model.trim",
+              value: _vm.newTask.title,
+              expression: "newTask.title",
+              modifiers: { trim: true }
+            }
+          ],
+          staticClass:
+            "block w-full px-2 py-1 text-lg border-b border-blue-800 rounded",
+          attrs: { type: "text", placeholder: "Enter a title" },
+          domProps: { value: _vm.newTask.title },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.$set(_vm.newTask, "title", $event.target.value.trim())
+            },
+            blur: function($event) {
+              return _vm.$forceUpdate()
+            }
+          }
+        }),
+        _vm._v(" "),
+        _c("textarea", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model.trim",
+              value: _vm.newTask.description,
+              expression: "newTask.description",
+              modifiers: { trim: true }
+            }
+          ],
+          staticClass: "mt-3 p-2 block w-full p-1 border text-sm rounded",
+          attrs: { rows: "2", placeholder: "Add a description (optional)" },
+          domProps: { value: _vm.newTask.description },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.$set(_vm.newTask, "description", $event.target.value.trim())
+            },
+            blur: function($event) {
+              return _vm.$forceUpdate()
+            }
+          }
+        }),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.errorMessage,
+                expression: "errorMessage"
+              }
+            ]
+          },
+          [
+            _c("span", { staticClass: "text-xs text-red-500" }, [
+              _vm._v("\n        " + _vm._s(_vm.errorMessage) + "\n      ")
+            ])
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "p-3 flex justify-between items-end text-sm bg-gray-100"
+        },
+        [
+          _c(
+            "button",
+            {
+              staticClass: "py-1 leading-5 text-gray-600 hover:text-gray-700",
+              attrs: { type: "reset" },
+              on: {
+                click: function($event) {
+                  return _vm.$emit("task-canceled")
+                }
+              }
+            },
+            [_vm._v("\n      キャンセル\n    ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                "px-3 py-1 leading-5 text-white bg-orange-600 hover:bg-orange-500 rounded",
+              attrs: { type: "submit" }
+            },
+            [_vm._v("\n      追加\n    ")]
+          )
+        ]
+      )
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
 
 
 /***/ }),
@@ -19771,6 +20125,16 @@ var render = function() {
                   )
                 }),
                 _vm._v(" "),
+                _vm.newTaskForStatus === status.id
+                  ? _c("AddTaskForm", {
+                      attrs: { "status-id": status.id },
+                      on: {
+                        "task-added": _vm.handleTaskAdded,
+                        "task-canceled": _vm.closeAddTaskForm
+                      }
+                    })
+                  : _vm._e(),
+                _vm._v(" "),
                 _c(
                   "div",
                   {
@@ -19778,8 +20142,11 @@ var render = function() {
                       {
                         name: "show",
                         rawName: "v-show",
-                        value: !status.tasks.length,
-                        expression: "!status.tasks.length"
+                        value:
+                          !status.tasks.length &&
+                          _vm.newTaskForStatus !== status.id,
+                        expression:
+                          "!status.tasks.length && newTaskForStatus !== status.id"
                       }
                     ],
                     staticClass:
@@ -19794,9 +20161,14 @@ var render = function() {
                       "button",
                       {
                         staticClass:
-                          "mt-1 text-sm text-orange-600 hover:underline"
+                          "mt-1 text-sm text-orange-600 hover:underline",
+                        on: {
+                          click: function($event) {
+                            return _vm.openAddTaskForm(status.id)
+                          }
+                        }
                       },
-                      [_vm._v("\n            追加\n          ")]
+                      [_vm._v("\n            Add one\n          ")]
                     )
                   ]
                 )

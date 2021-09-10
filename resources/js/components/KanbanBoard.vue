@@ -28,17 +28,23 @@
             </p>
           </div>
 
-      <!-- あとで、ここにタスク追加フォームを入れます-->
+          <AddTaskForm
+            v-if="newTaskForStatus === status.id"
+            :status-id="status.id"
+            v-on:task-added="handleTaskAdded"
+            v-on:task-canceled="closeAddTaskForm"
+          />
 
           <div
-            v-show="!status.tasks.length"
+            v-show="!status.tasks.length && newTaskForStatus !== status.id"
             class="flex-1 p-4 flex flex-col items-center justify-center"
           >
             <span class="text-gray-600">No tasks yet</span>
             <button
               class="mt-1 text-sm text-orange-600 hover:underline"
+              @click="openAddTaskForm(status.id)"
             >
-              追加
+              Add one
             </button>
           </div>
         </div>
@@ -48,17 +54,46 @@
 </template>
 
 <script>
+import AddTaskForm from "./AddTaskForm";
+
 export default {
+  components: { AddTaskForm },
+
   props: {
     initialData: Array
   },
   data() {
     return {
-      statuses: []
+      statuses: [],
+
+      newTaskForStatus: 0
     };
   },
   mounted() {
     this.statuses = JSON.parse(JSON.stringify(this.initialData));
+  },
+  methods: {
+    // statusIdを設定し、フォームを表示
+    openAddTaskForm(statusId) {
+      this.newTaskForStatus = statusId;
+    },
+    // statusIdをリセットしてフォームを閉じる
+    closeAddTaskForm() {
+      this.newTaskForStatus = 0;
+    },
+    // ボードの正しい列にカードを追加
+    handleTaskAdded(newTask) {
+      // FInd the index of the status where we should add the newTask
+      const statusIndex = this.statuses.findIndex(
+        status => status.id === newTask.status_id
+      );
+
+      // 新しく作成しカードをボードに追加する
+      this.statuses[statusIndex].tasks.push(newTask);
+
+      // AddTaskFormを閉じる
+      this.closeAddTaskForm();
+    },
   }
 };
 </script>
